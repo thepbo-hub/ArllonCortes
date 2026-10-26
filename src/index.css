@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --brand-primary: #082e5a;
+    --brand-deep: #041426;
+    --surface-dark: #020812;
+    --surface-card: #05162d;
+    --surface-card-hover: #082245;
+    --surface-elevated: #0b2c58;
+    --accent-blue: #1688ff;
+    --accent-glow: #35a7ff;
+    --text-primary: #ffffff;
+    --text-secondary: #b7c4d3;
+    --text-muted: #627d98;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #020812;
+    color: #ffffff;
+    color-scheme: dark;
+  }
+
+  body {
+    overflow-x: hidden;
+    background-color: #020812;
+    background-image: 
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(22, 136, 255, 0.15), transparent),
+      radial-gradient(circle 600px at 100% 60%, rgba(8, 46, 90, 0.2), transparent),
+      radial-gradient(circle 600px at 0% 40%, rgba(11, 66, 120, 0.15), transparent);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Outfit', sans-serif;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #020812;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #082e5a;
+    border-radius: 4px;
+    border: 1px solid rgba(22, 136, 255, 0.2);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #1688ff;
+  }
+}
+
+/* Diagonal shine beam animation for premium buttons */
+@keyframes diagonalShine {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  20%, 100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.animate-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.28),
+    transparent
+  );
+  transform: translateX(-150%) skewX(-20deg);
+  animation: diagonalShine 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* Subtle ambient breathing glow for logo emblem and cards */
+@keyframes ambientBreathe {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.03);
+  }
+}
+
+.animate-breathe {
+  animation: ambientBreathe 6s ease-in-out infinite;
+}
+
+/* Tabular figures for prices */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

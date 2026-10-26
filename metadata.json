@@ -1,0 +1,6 @@
+{
+  "name": "Arllon Fernandes Barbearia - Catálogo 3D & Simulador",
+  "description": "Experiência digital premium e catálogo interativo de serviços da Arllon Fernandes Barbearia com simulador de orçamento.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
