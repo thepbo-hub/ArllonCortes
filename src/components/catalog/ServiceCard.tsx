@@ -160,11 +160,17 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         {/* Price Tag Pill Overlay */}
         <div className="absolute bottom-3 left-3 z-20">
           {isQuote ? (
-            <span className="inline-flex items-center rounded-md bg-[#082e5a]/90 backdrop-blur-md px-2.5 py-1 text-xs font-bold tracking-wider text-[#35a7ff] border border-[#1688ff]/40 shadow-sm uppercase">
+            <span
+              translate="no"
+              className="notranslate inline-flex items-center rounded-md bg-[#082e5a]/95 backdrop-blur-md px-2.5 py-1 text-xs font-bold tracking-wider text-[#35a7ff] border border-[#1688ff]/50 shadow-md uppercase select-none"
+            >
               CONSULTAR
             </span>
           ) : (
-            <span className="inline-flex items-center rounded-md bg-[#041426]/90 backdrop-blur-md px-2.5 py-1 text-xs sm:text-sm font-extrabold tracking-tight text-white border border-[#1688ff]/30 shadow-md tabular-nums">
+            <span
+              translate="no"
+              className="notranslate inline-flex items-center rounded-md bg-[#041426]/95 backdrop-blur-md px-2.5 py-1 text-xs sm:text-sm font-extrabold tracking-tight text-white border border-[#1688ff]/30 shadow-md tabular-nums select-none"
+            >
               {formatCurrency(service.priceCents)}
             </span>
           )}
@@ -172,7 +178,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
       </div>
 
       {/* Card Body: Details & Action */}
-      <div className="flex flex-1 flex-col justify-between p-4 sm:p-5">
+      <div className="flex flex-1 flex-col justify-between p-3.5 sm:p-5">
         <div>
           <h3 className="font-display text-base sm:text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#35a7ff] transition-colors duration-200">
             {service.name}
@@ -186,41 +192,38 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
 
           {service.durationApprox && (
             <div className="mt-2.5 flex items-center gap-2 text-[11px] text-[#627d98]">
-              <span>Duração aprox:</span>
+              <span>Duração:</span>
               <span className="text-[#b7c4d3] font-medium">{service.durationApprox}</span>
             </div>
           )}
         </div>
 
-        {/* Bottom Interactive Action Button */}
-        <div className="mt-4 pt-3 border-t border-[#1688ff]/15 flex items-center justify-between">
-          <span className="text-xs font-semibold text-[#b7c4d3]">
-            {isQuote ? 'Valor sob avaliação' : 'Valor unitário'}
-          </span>
-
+        {/* Bottom Interactive Action Button (Full Width on mobile for maximum visibility and touch target) */}
+        <div className="mt-3.5 pt-2.5 border-t border-[#1688ff]/15">
           <button
             type="button"
+            translate="no"
             onClick={(e) => {
               e.stopPropagation();
               onToggle(service.id);
             }}
             className={cn(
-              'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#35a7ff]',
+              'notranslate w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 active:scale-[0.98] select-none',
               isSelected
-                ? 'bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700/50'
-                : 'bg-[#082e5a] hover:bg-[#1688ff] text-white border border-[#1688ff]/40 shadow-sm'
+                ? 'bg-rose-950/85 hover:bg-rose-900 text-rose-300 border border-rose-700/60 shadow-[0_2px_10px_rgba(225,29,72,0.25)]'
+                : 'bg-gradient-to-r from-[#082e5a] to-[#0b4278] hover:to-[#1688ff] text-white border border-[#1688ff]/50 shadow-[0_2px_10px_rgba(22,136,255,0.25)]'
             )}
             aria-label={isSelected ? `Remover ${service.name} do orçamento` : `Adicionar ${service.name} ao orçamento`}
           >
             {isSelected ? (
               <>
-                <Minus className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>Remover</span>
+                <Minus className="h-4 w-4 shrink-0 text-rose-400" aria-hidden="true" />
+                <span className="whitespace-nowrap font-extrabold">Remover</span>
               </>
             ) : (
               <>
-                <Plus className="h-3.5 w-3.5 text-[#35a7ff]" aria-hidden="true" />
-                <span>Selecionar</span>
+                <Plus className="h-4 w-4 shrink-0 text-[#35a7ff]" aria-hidden="true" />
+                <span className="whitespace-nowrap font-extrabold">Selecionar</span>
               </>
             )}
           </button>

@@ -254,7 +254,10 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
                           </div>
 
                           <div className="flex items-center gap-3 shrink-0">
-                            <span className="inline-flex rounded-md bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-300 border border-amber-500/40 uppercase">
+                            <span
+                              translate="no"
+                              className="notranslate inline-flex rounded-md bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-300 border border-amber-500/40 uppercase"
+                            >
                               CONSULTAR
                             </span>
                             <button
