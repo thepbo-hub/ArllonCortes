@@ -17,8 +17,9 @@ export const CATEGORIES: CategoryInfo[] = [
     serviceIds: [
       'corte-simples',
       'corte-disfarcado',
-      'acabamento',
-      'desenho',
+      'pezinho-cabelo',
+      'hidratacao-cabelo-barba',
+      'selagem',
       'platinado',
       'reflexo',
       'camuflagem-cabelo',
@@ -45,14 +46,14 @@ export const CATEGORIES: CategoryInfo[] = [
     name: 'Sobrancelha & Acabamento',
     tagline: 'Detalhes & Precisão',
     description: 'Linhas milimétricas e harmonia para o olhar e contorno.',
-    serviceIds: ['sobrancelha', 'linha', 'acabamento', 'desenho'],
+    serviceIds: ['sobrancelha', 'pezinho-cabelo'],
   },
   {
     id: 'limpeza-cuidados',
     name: 'Limpeza & Cuidados',
     tagline: 'Revitalização da Pele',
     description: 'Tratamentos dermatológicos masculinos para desobstrução e frescor.',
-    serviceIds: ['limpeza-facial', 'barboterapia-limpeza', 'depilacao-nariz-orelha'],
+    serviceIds: ['limpeza-facial', 'depilacao-nariz-orelha'],
   },
   {
     id: 'coloracao-transformacao',
@@ -76,6 +77,7 @@ export const CATEGORIES: CategoryInfo[] = [
     serviceIds: [
       'alinhamento-capilar',
       'alinhamento-barba',
+      'selagem',
       'barboterapia',
       'hidratacao-cabelo-barba',
       'depilacao-nariz-orelha',

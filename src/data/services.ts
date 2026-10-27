@@ -8,6 +8,13 @@ export type CategoryId =
   | 'coloracao-transformacao'
   | 'tratamentos-especiais';
 
+export interface ServiceVariant {
+  id: string;
+  label: string;
+  name: string;
+  priceCents: number;
+}
+
 export interface ServiceItem {
   id: string;
   name: string;
@@ -17,6 +24,7 @@ export interface ServiceItem {
   categories: CategoryId[];
   description?: string;
   durationApprox?: string;
+  variants?: ServiceVariant[];
 }
 
 export const SERVICES: ServiceItem[] = [
@@ -33,7 +41,7 @@ export const SERVICES: ServiceItem[] = [
   },
   {
     id: 'corte-disfarcado',
-    name: 'Corte disfarçado',
+    name: 'Corte',
     image: 'https://i.postimg.cc/B6m890P1/Corte-disfarcado.png',
     priceCents: 4000,
     priceType: 'fixed',
@@ -42,24 +50,24 @@ export const SERVICES: ServiceItem[] = [
     durationApprox: '45 min',
   },
   {
-    id: 'acabamento',
-    name: 'Acabamento',
-    image: 'https://i.postimg.cc/fyFJyfv6/Acabamento.jpg',
+    id: 'pezinho-cabelo',
+    name: 'Pezinho de cabelo',
+    image: 'https://i.postimg.cc/52fnJz24/Pezinho-de-cabelo.jpg',
     priceCents: 1500,
     priceType: 'fixed',
     categories: ['cabelo', 'sobrancelha-acabamento'],
-    description: 'Alinhamento dos contornos da nuca, costeletas e frontal com navalha.',
+    description: 'Alinhamento e contorno preciso das linhas do cabelo com navalhete e lâmina descartável.',
     durationApprox: '15 min',
   },
   {
-    id: 'desenho',
-    name: 'Desenho',
-    image: 'https://i.postimg.cc/Xqhpqkg1/Desenho.jpg',
-    priceCents: 1000,
+    id: 'selagem',
+    name: 'Selagem',
+    image: 'https://i.postimg.cc/t4HC4XKF/Para-que-serve-Modelagem-capilar-com-alta-fixacao-e-brilho-de-facil-remocao-com-agua-corrente-(2).png',
+    priceCents: 7000,
     priceType: 'fixed',
-    categories: ['cabelo', 'sobrancelha-acabamento'],
-    description: 'Riscos geométricos, listras ou freestyle personalizado na navalha.',
-    durationApprox: '15 min',
+    categories: ['cabelo', 'tratamentos-especiais'],
+    description: 'Tratamento térmico capilar para alinhamento dos fios, selagem das cutículas e brilho intenso.',
+    durationApprox: '45 min',
   },
   {
     id: 'platinado',
@@ -75,7 +83,7 @@ export const SERVICES: ServiceItem[] = [
     id: 'reflexo',
     name: 'Reflexo',
     image: 'https://i.postimg.cc/brdZqB1G/Reflexo.jpg',
-    priceCents: 8000,
+    priceCents: 10000,
     priceType: 'fixed',
     categories: ['cabelo', 'coloracao-transformacao'],
     description: 'Mechas alinhadas na touca com clareamento luminoso e acabamento brilhante.',
@@ -105,8 +113,8 @@ export const SERVICES: ServiceItem[] = [
     id: 'alinhamento-capilar',
     name: 'Alinhamento capilar',
     image: 'https://i.postimg.cc/nr5CrG1g/Alinhamento-capilar.jpg',
-    priceCents: null,
-    priceType: 'quote',
+    priceCents: 3500,
+    priceType: 'fixed',
     categories: ['cabelo', 'tratamentos-especiais'],
     description: 'Redução de volume e controle de frizz com produtos de alta tecnologia.',
     durationApprox: '30 min',
@@ -125,10 +133,10 @@ export const SERVICES: ServiceItem[] = [
   },
   {
     id: 'alinhamento-barba',
-    name: 'Alinhamento de barba',
+    name: 'Alinhamento capilar barba',
     image: 'https://i.postimg.cc/yx5kxyT2/Alinhamento-de-barba.jpg',
-    priceCents: null,
-    priceType: 'quote',
+    priceCents: 3000,
+    priceType: 'fixed',
     categories: ['barba', 'tratamentos-especiais'],
     description: 'Alinhamento térmico e modelagem dos fios rebeldes da barba.',
     durationApprox: '15 min',
@@ -137,8 +145,8 @@ export const SERVICES: ServiceItem[] = [
     id: 'barboterapia',
     name: 'Barboterapia',
     image: 'https://i.postimg.cc/FRTf54kg/Barboterapia.jpg',
-    priceCents: null,
-    priceType: 'quote',
+    priceCents: 4000,
+    priceType: 'fixed',
     categories: ['barba', 'tratamentos-especiais'],
     description: 'Experiência sensorial completa com óleos essenciais, massagem facial e toalhas quentes.',
     durationApprox: '30 min',
@@ -147,7 +155,7 @@ export const SERVICES: ServiceItem[] = [
     id: 'camuflagem-barba',
     name: 'Camuflagem dos fios brancos (barba)',
     image: 'https://i.postimg.cc/T1Sp1Jcs/Camuflagem-dos-fios-brancos-(barba).jpg',
-    priceCents: 2500,
+    priceCents: 3000,
     priceType: 'fixed',
     categories: ['barba', 'coloracao-transformacao'],
     description: 'Tonalização personalizada para harmonizar o tom dos pelos da barba sem artificiais.',
@@ -167,11 +175,16 @@ export const SERVICES: ServiceItem[] = [
     id: 'hidratacao-cabelo-barba',
     name: 'Hidratação de cabelo ou barba',
     image: 'https://i.postimg.cc/ZR8M8bBN/Para-que-serve-Modelagem-capilar-com-alta-fixacao-e-brilho-de-facil-remocao-com-agua-corrente-(1).png',
-    priceCents: 2000,
+    priceCents: 4500,
     priceType: 'fixed',
-    categories: ['barba', 'tratamentos-especiais'],
+    categories: ['cabelo', 'barba', 'tratamentos-especiais'],
     description: 'Nutrição profunda com máscara restauradora, devolvendo maciez e brilho.',
     durationApprox: '15 min',
+    variants: [
+      { id: 'cabelo', label: 'Cabelo', name: 'Hidratação (Cabelo)', priceCents: 2500 },
+      { id: 'barba', label: 'Barba', name: 'Hidratação (Barba)', priceCents: 2000 },
+      { id: 'ambos', label: 'Ambos', name: 'Hidratação (Cabelo + Barba)', priceCents: 4500 },
+    ],
   },
 
   // Sobrancelha e acabamento
@@ -185,46 +198,26 @@ export const SERVICES: ServiceItem[] = [
     description: 'Limpeza e alinhamento do desenho na navalha ou pinça com máxima naturalidade.',
     durationApprox: '15 min',
   },
-  {
-    id: 'linha',
-    name: 'Linha',
-    image: 'https://i.postimg.cc/3NWk3c2q/Linha.jpg',
-    priceCents: 500,
-    priceType: 'fixed',
-    categories: ['sobrancelha-acabamento'],
-    description: 'Depilação egípcia com fio de linha para precisão absoluta e menor irritação.',
-    durationApprox: '15 min',
-  },
 
   // Limpeza e cuidados
   {
     id: 'limpeza-facial',
     name: 'Limpeza de pele facial',
     image: 'https://i.postimg.cc/rszDqP53/Limpeza-de-pele-facial.jpg',
-    priceCents: 3000,
+    priceCents: 3500,
     priceType: 'fixed',
     categories: ['limpeza-cuidados'],
     description: 'Higienização profunda, esfoliação facial e remoção de impurezas da pele.',
     durationApprox: '15 min',
   },
   {
-    id: 'barboterapia-limpeza',
-    name: 'Barboterapia + limpeza facial',
-    image: 'https://i.postimg.cc/prymP6KK/Barboterapia-Limpeza-facial.png',
-    priceCents: 5000,
-    priceType: 'fixed',
-    categories: ['limpeza-cuidados'],
-    description: 'Combo premium: barbear relaxante com toalha quente associado a protocolo facial completo.',
-    durationApprox: '30 min',
-  },
-  {
     id: 'depilacao-nariz-orelha',
-    name: 'Depilação de nariz ou orelha',
+    name: 'Epilação de nariz/orelha',
     image: 'https://i.postimg.cc/1XTfXrKJ/Depilacao-nariz-ou-orelha.jpg',
-    priceCents: null,
-    priceType: 'quote',
+    priceCents: 1500,
+    priceType: 'fixed',
     categories: ['limpeza-cuidados', 'tratamentos-especiais'],
-    description: 'Remoção segura e higiênica de pelos indesejados nas narinas ou orelhas com cera suave.',
+    description: 'Remoção higiênica e rápida de pelos indesejados nas narinas ou orelhas.',
     durationApprox: '15 min',
   },
 ];

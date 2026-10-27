@@ -6,13 +6,17 @@ import { ServiceCard } from './ServiceCard';
 interface ServiceCategoryProps {
   category: CategoryInfo;
   isSelected: (id: string) => boolean;
+  getVariant: (serviceId: string) => string;
   onToggleService: (id: string) => void;
+  onSelectVariant: (serviceId: string, variantId: string) => void;
 }
 
 export const ServiceCategory: React.FC<ServiceCategoryProps> = ({
   category,
   isSelected,
+  getVariant,
   onToggleService,
+  onSelectVariant,
 }) => {
   const services: ServiceItem[] = category.serviceIds
     .map((id) => SERVICES_BY_ID.get(id))
@@ -53,7 +57,9 @@ export const ServiceCategory: React.FC<ServiceCategoryProps> = ({
             key={`${category.id}-${service.id}`}
             service={service}
             isSelected={isSelected(service.id)}
+            activeVariantId={getVariant(service.id)}
             onToggle={onToggleService}
+            onSelectVariant={onSelectVariant}
           />
         ))}
       </div>

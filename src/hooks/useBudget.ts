@@ -11,6 +11,9 @@ export interface BudgetState {
   subtotalCents: number;
   totalCount: number;
   hasQuoteServices: boolean;
+  selectedVariants: Record<string, string>;
+  setVariant: (serviceId: string, variantId: string) => void;
+  getVariant: (serviceId: string) => string;
   isSelected: (id: string) => boolean;
   toggleService: (id: string) => void;
   addService: (id: string) => void;
@@ -21,6 +24,11 @@ export interface BudgetState {
 export function useBudget(): BudgetState {
   // Inicializa sempre como vazio; não salva nem restaura seleções anteriores ao fechar o biosite
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  
+  // Estado para variantes selecionadas (ex: 'hidratacao-cabelo-barba' -> 'cabelo' | 'barba' | 'ambos')
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({
+    'hidratacao-cabelo-barba': 'ambos',
+  });
 
   // Limpa qualquer dado residual de versões anteriores no localStorage
   useEffect(() => {
@@ -31,6 +39,20 @@ export function useBudget(): BudgetState {
       // Ignore storage errors
     }
   }, []);
+
+  const setVariant = useCallback((serviceId: string, variantId: string) => {
+    setSelectedVariants((prev) => ({
+      ...prev,
+      [serviceId]: variantId,
+    }));
+  }, []);
+
+  const getVariant = useCallback(
+    (serviceId: string) => {
+      return selectedVariants[serviceId] || 'ambos';
+    },
+    [selectedVariants]
+  );
 
   const toggleService = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -64,8 +86,24 @@ export function useBudget(): BudgetState {
   const selectedServices = useMemo(() => {
     return selectedIds
       .map((id) => SERVICES_BY_ID.get(id))
-      .filter((s): s is ServiceItem => Boolean(s));
-  }, [selectedIds]);
+      .filter((s): s is ServiceItem => Boolean(s))
+      .map((service) => {
+        if (service.variants && service.variants.length > 0) {
+          const currentVariantId = selectedVariants[service.id] || 'ambos';
+          const activeVariant =
+            service.variants.find((v) => v.id === currentVariantId) ||
+            service.variants[0];
+          if (activeVariant) {
+            return {
+              ...service,
+              name: activeVariant.name,
+              priceCents: activeVariant.priceCents,
+            };
+          }
+        }
+        return service;
+      });
+  }, [selectedIds, selectedVariants]);
 
   const fixedPriceServices = useMemo(() => {
     return selectedServices.filter(
@@ -97,6 +135,9 @@ export function useBudget(): BudgetState {
     subtotalCents,
     totalCount,
     hasQuoteServices,
+    selectedVariants,
+    setVariant,
+    getVariant,
     isSelected,
     toggleService,
     addService,

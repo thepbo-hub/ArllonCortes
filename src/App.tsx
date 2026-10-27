@@ -22,6 +22,8 @@ export default function App() {
     totalCount,
     hasQuoteServices,
     isSelected,
+    getVariant,
+    setVariant,
     toggleService,
     removeService,
     clearSelection,
@@ -87,7 +89,9 @@ export default function App() {
               key={category.id}
               category={category}
               isSelected={isSelected}
+              getVariant={getVariant}
               onToggleService={toggleService}
+              onSelectVariant={setVariant}
             />
           ))}
         </div>

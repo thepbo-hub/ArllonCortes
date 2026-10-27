@@ -7,13 +7,17 @@ import { cn } from '../../lib/utils';
 interface ServiceCardProps {
   service: ServiceItem;
   isSelected: boolean;
+  activeVariantId?: string;
   onToggle: (id: string) => void;
+  onSelectVariant?: (serviceId: string, variantId: string) => void;
 }
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
   isSelected,
+  activeVariantId,
   onToggle,
+  onSelectVariant,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [imageFailed, setImageFailed] = useState(false);
@@ -60,6 +64,17 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   const isHidratacao = service.id === 'hidratacao-cabelo-barba';
   const hasFluidGradient = isPigmentacaoBarba || isHidratacao;
 
+  // Active variant resolution for multi-option services
+  const currentVariant = service.variants?.find(
+    (v) => v.id === (activeVariantId || 'ambos')
+  ) || service.variants?.[0];
+
+  const currentPriceCents = currentVariant
+    ? currentVariant.priceCents
+    : service.priceCents;
+
+  const currentDisplayName = currentVariant ? currentVariant.name : service.name;
+
   return (
     <div
       ref={cardRef}
@@ -71,7 +86,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
       role="button"
       tabIndex={0}
       aria-pressed={isSelected}
-      aria-label={`${service.name}. Preço: ${isQuote ? 'Sob Consulta' : formatCurrency(service.priceCents)}. ${isSelected ? 'Selecionado, clique para remover' : 'Clique para adicionar ao orçamento'}`}
+      aria-label={`${currentDisplayName}. Preço: ${isQuote ? 'Sob Consulta' : formatCurrency(currentPriceCents)}. ${isSelected ? 'Selecionado, clique para remover' : 'Clique para adicionar ao orçamento'}`}
       style={{
         transform: isHovered
           ? `perspective(900px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) translateY(-3px)`
@@ -171,7 +186,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               translate="no"
               className="notranslate inline-flex items-center rounded-md bg-[#041426]/95 backdrop-blur-md px-2.5 py-1 text-xs sm:text-sm font-extrabold tracking-tight text-white border border-[#1688ff]/30 shadow-md tabular-nums select-none"
             >
-              {formatCurrency(service.priceCents)}
+              {formatCurrency(currentPriceCents)}
             </span>
           )}
         </div>
@@ -196,6 +211,51 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               <span className="text-[#b7c4d3] font-medium">{service.durationApprox}</span>
             </div>
           )}
+
+          {/* Interactive Variant Selector (ex: Hidratação Cabelo, Barba ou Ambos) */}
+          {service.variants && service.variants.length > 0 && (
+            <div className="mt-3.5 pt-3 border-t border-[#1688ff]/15">
+              <div className="flex items-center justify-between text-[11px] font-semibold text-[#b7c4d3] mb-2">
+                <span>Escolha a opção:</span>
+                <span className="text-[#35a7ff] font-extrabold">
+                  {formatCurrency(currentPriceCents)}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[#020d1a] border border-[#1688ff]/25">
+                {service.variants.map((v) => {
+                  const isActive = (activeVariantId || 'ambos') === v.id;
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectVariant?.(service.id, v.id);
+                      }}
+                      className={cn(
+                        'px-1.5 py-1.5 rounded-lg text-[11px] font-bold transition-all text-center flex flex-col items-center justify-center leading-tight',
+                        isActive
+                          ? 'bg-gradient-to-r from-[#1688ff] to-[#35a7ff] text-white shadow-[0_0_12px_rgba(22,136,255,0.45)] ring-1 ring-white/30'
+                          : 'text-[#b7c4d3] hover:text-white hover:bg-[#082e5a]/60'
+                      )}
+                      aria-pressed={isActive}
+                      aria-label={`${v.label} por ${formatCurrency(v.priceCents)}`}
+                    >
+                      <span className="truncate max-w-full">{v.label}</span>
+                      <span
+                        className={cn(
+                          'text-[10px] mt-0.5 tabular-nums',
+                          isActive ? 'text-white font-extrabold' : 'text-[#35a7ff]'
+                        )}
+                      >
+                        {formatCurrency(v.priceCents)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Bottom Interactive Action Button (Full Width on mobile for maximum visibility and touch target) */}
@@ -213,7 +273,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
                 ? 'bg-rose-950/85 hover:bg-rose-900 text-rose-300 border border-rose-700/60 shadow-[0_2px_10px_rgba(225,29,72,0.25)]'
                 : 'bg-gradient-to-r from-[#082e5a] to-[#0b4278] hover:to-[#1688ff] text-white border border-[#1688ff]/50 shadow-[0_2px_10px_rgba(22,136,255,0.25)]'
             )}
-            aria-label={isSelected ? `Remover ${service.name} do orçamento` : `Adicionar ${service.name} ao orçamento`}
+            aria-label={isSelected ? `Remover ${currentDisplayName} do orçamento` : `Adicionar ${currentDisplayName} ao orçamento`}
           >
             {isSelected ? (
               <>
