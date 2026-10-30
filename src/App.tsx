@@ -9,10 +9,19 @@ import { ServiceCategory } from './components/catalog/ServiceCategory';
 import { FloatingBudgetBar } from './components/budget/FloatingBudgetBar';
 import { BudgetSummary } from './components/budget/BudgetSummary';
 import { SiteFooter } from './components/layout/SiteFooter';
+import { LegalModal, LegalDocType } from './components/legal/LegalModal';
+import { CookieConsentBanner } from './components/legal/CookieConsentBanner';
 
 export default function App() {
   const [isBudgetOpen, setIsBudgetOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<CategoryId>('cabelo');
+
+  // Controle dos Documentos Legais (LGPD, Termos de Uso, Política de Cookies)
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
+  const [activeLegalDoc, setActiveLegalDoc] = useState<LegalDocType>('privacy');
+  
+  // Controle do Banner de Consentimento de Cookies
+  const [isCookieForceOpen, setIsCookieForceOpen] = useState(false);
 
   const {
     selectedServices,
@@ -37,6 +46,11 @@ export default function App() {
       const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
+  }, []);
+
+  const handleOpenLegal = useCallback((doc: LegalDocType) => {
+    setActiveLegalDoc(doc);
+    setIsLegalOpen(true);
   }, []);
 
   // Update active category on scroll with IntersectionObserver
@@ -65,6 +79,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#020812] text-white flex flex-col selection:bg-[#1688ff] selection:text-white">
+      {/* WCAG 2.1 AA: Skip to main content link for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:rounded-xl focus:bg-[#1688ff] focus:text-white focus:font-bold focus:shadow-[0_0_20px_rgba(22,136,255,0.7)] focus:outline-none"
+      >
+        Pular para o conteúdo principal
+      </a>
+
       {/* Top Navigation Bar */}
       <SiteHeader
         totalCount={totalCount}
@@ -73,7 +95,7 @@ export default function App() {
       />
 
       {/* Hero Section */}
-      <main className="flex-1">
+      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         <HeroSection onExplore={handleExplore} />
 
         {/* Category Navigation Bar */}
@@ -118,10 +140,30 @@ export default function App() {
         hasQuoteServices={hasQuoteServices}
         onRemoveService={removeService}
         onClearSelection={clearSelection}
+        onOpenPrivacy={() => handleOpenLegal('privacy')}
       />
 
-      {/* Site Footer */}
-      <SiteFooter />
+      {/* Site Footer with Legal Links & Disclaimers */}
+      <SiteFooter
+        onOpenLegal={handleOpenLegal}
+        onOpenCookiePreferences={() => setIsCookieForceOpen(true)}
+      />
+
+      {/* Central Legal & LGPD Modal (Privacy, Terms, Cookies) */}
+      <LegalModal
+        isOpen={isLegalOpen}
+        activeDoc={activeLegalDoc}
+        onClose={() => setIsLegalOpen(false)}
+        onSelectDoc={(doc) => setActiveLegalDoc(doc)}
+        onOpenPreferences={() => setIsCookieForceOpen(true)}
+      />
+
+      {/* LGPD Cookie Consent Banner with Prior Blocking */}
+      <CookieConsentBanner
+        onOpenPolicy={() => handleOpenLegal('cookies')}
+        forceOpen={isCookieForceOpen}
+        onCloseForceOpen={() => setIsCookieForceOpen(false)}
+      />
     </div>
   );
 }

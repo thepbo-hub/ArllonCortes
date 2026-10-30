@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { ArrowDown, Sparkles } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { ArrowDown, Sparkles, Pause, Play, Info } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface HeroSectionProps {
@@ -10,8 +10,42 @@ const CINEMATIC_VIDEO_URL = 'https://yourimageshare.com/ib/CufIM3MjZf.mp4';
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
   const [videoError, setVideoError] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+
+  // Respeita prefers-reduced-motion do sistema operacional (WCAG 2.1 AA)
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mediaQuery.matches) {
+      setIsPlaying(false);
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+    }
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        setIsPlaying(false);
+        videoRef.current?.pause();
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const toggleVideoPlayback = () => {
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    }
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
@@ -25,13 +59,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
     <section
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      aria-label="Apresentação Arllon Fernandes Barbearia"
+      aria-label="Apresentação da Arllon Fernandes Barbearia"
       className="relative w-full min-h-[72vh] sm:min-h-[82vh] md:min-h-[88vh] flex flex-col justify-center items-center text-center overflow-hidden"
     >
       {/* Edge-to-Edge Full-Width Video Background (Zero Margins) */}
       <div className="absolute inset-0 w-full h-full overflow-hidden bg-[#020812]">
         {!videoError ? (
           <video
+            ref={videoRef}
             src={CINEMATIC_VIDEO_URL}
             autoPlay
             loop
@@ -84,6 +119,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
         />
       </div>
 
+      {/* Accessible Video Pause/Play Control (WCAG 2.1 AA 2.2.2) */}
+      {!videoError && (
+        <div className="absolute top-4 right-4 z-30">
+          <button
+            type="button"
+            onClick={toggleVideoPlayback}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#020812]/85 hover:bg-[#082e5a] border border-[#1688ff]/30 text-white text-xs font-semibold backdrop-blur-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#35a7ff]"
+            aria-label={isPlaying ? 'Pausar vídeo de fundo' : 'Reproduzir vídeo de fundo'}
+            title={isPlaying ? 'Pausar animação de fundo' : 'Reproduzir animação de fundo'}
+          >
+            {isPlaying ? (
+              <>
+                <Pause className="w-3.5 h-3.5 text-[#35a7ff]" aria-hidden="true" />
+                <span className="hidden sm:inline">Pausar Vídeo</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-3.5 h-3.5 text-[#35a7ff]" aria-hidden="true" />
+                <span className="hidden sm:inline">Reproduzir Vídeo</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
       {/* Editorial Content Over Full-Width Video Banner */}
       <div className="relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center">
         {/* Quiet Kicker Label (Zero-Pill Discipline) */}
@@ -116,7 +176,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25 }}
-          className="text-base sm:text-lg md:text-xl text-[#b7c4d3] max-w-2xl font-normal leading-relaxed mb-10 drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)]"
+          className="text-base sm:text-lg md:text-xl text-[#b7c4d3] max-w-2xl font-normal leading-relaxed mb-8 drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)]"
           style={{ textWrap: 'balance' }}
         >
           Explore nossos serviços, monte sua combinação e descubra o valor do seu atendimento.
@@ -127,6 +187,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.35 }}
+          className="flex flex-col items-center gap-3"
         >
           <button
             onClick={onExplore}
@@ -135,6 +196,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
             <span>EXPLORAR SERVIÇOS</span>
             <ArrowDown className="w-4 h-4 text-[#35a7ff] transition-transform duration-300 group-hover:translate-y-0.5" />
           </button>
+
+          {/* Informative notice requirement */}
+          <div className="flex items-center gap-1.5 text-[11px] text-[#8faec7]">
+            <Info className="w-3.5 h-3.5 text-[#35a7ff] shrink-0" aria-hidden="true" />
+            <span>Valores e estimativas de duração informativos, confirmados presencialmente.</span>
+          </div>
         </motion.div>
       </div>
 

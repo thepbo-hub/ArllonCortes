@@ -12,12 +12,13 @@
     --accent-glow: #35a7ff;
     --text-primary: #ffffff;
     --text-secondary: #b7c4d3;
-    --text-muted: #627d98;
+    /* WCAG 2.1 AA Contrast Compliant: #8faec7 has > 5.5:1 ratio against #020812 */
+    --text-muted: #8faec7;
   }
 
   html {
     scroll-behavior: smooth;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background-color: #020812;
     color: #ffffff;
     color-scheme: dark;
@@ -35,7 +36,7 @@
   }
 
   h1, h2, h3, h4, .font-display {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   }
 
   /* Custom subtle scrollbar */
@@ -105,7 +106,52 @@
   animation: ambientBreathe 6s ease-in-out infinite;
 }
 
+/* Continuous smooth rotation around logo */
+@keyframes spinAroundLogo {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-around {
+  animation: spinAroundLogo 3.5s linear infinite;
+}
+
+.animate-spin-around-slow {
+  animation: spinAroundLogo 6s linear infinite;
+}
+
 /* Tabular figures for prices */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* WCAG 2.1 AA: Respeito a prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-shine::after {
+    display: none !important;
+  }
+
+  .animate-breathe,
+  .animate-spin-around,
+  .animate-spin-around-slow {
+    animation: none !important;
+    opacity: 0.8 !important;
+  }
 }

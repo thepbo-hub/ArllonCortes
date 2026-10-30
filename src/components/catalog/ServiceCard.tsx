@@ -137,7 +137,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         {!imageFailed ? (
           <img
             src={service.image}
-            alt={service.name}
+            alt={`Fotografia demonstrativa do serviço de ${service.name} na Arllon Fernandes Barbearia`}
             loading="lazy"
             referrerPolicy="no-referrer"
             onError={() => setImageFailed(true)}
@@ -206,9 +206,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           )}
 
           {service.durationApprox && (
-            <div className="mt-2.5 flex items-center gap-2 text-[11px] text-[#627d98]">
+            <div className="mt-2.5 flex items-center gap-2 text-[11px] text-[#8faec7]">
               <span>Duração:</span>
-              <span className="text-[#b7c4d3] font-medium">{service.durationApprox}</span>
+              <span className="text-white font-medium">{service.durationApprox}</span>
             </div>
           )}
 

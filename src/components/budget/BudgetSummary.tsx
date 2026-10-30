@@ -22,6 +22,7 @@ interface BudgetSummaryProps {
   hasQuoteServices: boolean;
   onRemoveService: (id: string) => void;
   onClearSelection: () => void;
+  onOpenPrivacy?: () => void;
 }
 
 // Ícone oficial e reconhecível do WhatsApp
@@ -47,6 +48,7 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
   hasQuoteServices,
   onRemoveService,
   onClearSelection,
+  onOpenPrivacy,
 }) => {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
@@ -188,8 +190,7 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
                           <div className="flex items-center gap-3 min-w-0">
                             <img
                               src={service.image}
-                              alt=""
-                              aria-hidden="true"
+                              alt={`Procedimento selecionado: ${service.name}`}
                               className="h-11 w-11 rounded-lg object-cover shrink-0 bg-[#030d1a] border border-[#1688ff]/20"
                             />
                             <div className="min-w-0">
@@ -197,7 +198,7 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
                                 {service.name}
                               </h4>
                               {service.durationApprox && (
-                                <p className="text-[11px] text-[#627d98]">
+                                <p className="text-[11px] text-[#8faec7]">
                                   {service.durationApprox}
                                 </p>
                               )}
@@ -239,8 +240,7 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
                           <div className="flex items-center gap-3 min-w-0">
                             <img
                               src={service.image}
-                              alt=""
-                              aria-hidden="true"
+                              alt={`Procedimento sob consulta: ${service.name}`}
                               className="h-11 w-11 rounded-lg object-cover shrink-0 bg-[#030d1a] border border-amber-500/20"
                             />
                             <div className="min-w-0">
@@ -318,6 +318,20 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
                   <WhatsAppIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white shrink-0 drop-shadow-sm transition-transform duration-300 group-hover:scale-110" />
                   <span className="truncate">ENVIAR MEU ORÇAMENTO PELO WHATSAPP</span>
                 </button>
+
+                {/* LGPD & Informative Disclosure */}
+                <p className="mt-2 text-[11px] text-[#8faec7] text-center leading-relaxed">
+                  Ao clicar, a mensagem é transmitida diretamente ao WhatsApp oficial da barbearia. Nenhum dado é salvo no servidor. Preços e estimativas são informativos e sujeitos a confirmação presencial.{' '}
+                  {onOpenPrivacy && (
+                    <button
+                      type="button"
+                      onClick={onOpenPrivacy}
+                      className="text-[#35a7ff] hover:text-white underline underline-offset-2 transition-colors font-semibold"
+                    >
+                      Política de Privacidade
+                    </button>
+                  )}
+                </p>
               </div>
 
               {/* Ações Secundárias: Limpar seleção & Continuar escolhendo */}

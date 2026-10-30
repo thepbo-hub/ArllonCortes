@@ -23,7 +23,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
           className="group flex items-center gap-3 whitespace-nowrap shrink-0 transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1688ff]"
           aria-label="Arllon Fernandes Barbearia - Página Inicial"
         >
-          <BrandLogo size="sm" showHalo={false} />
+          <BrandLogo size="sm" showHalo={false} spinningRing={true} />
           <span className="font-display text-sm sm:text-base font-bold tracking-tight text-white uppercase hidden min-[360px]:inline">
             Arllon Fernandes
           </span>
