@@ -1,12 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ArrowDown, Sparkles, Pause, Play, Info } from 'lucide-react';
 import { motion } from 'motion/react';
+import { HERO_VIDEO_CONFIG } from '../../config/heroVideo';
 
 interface HeroSectionProps {
   onExplore: () => void;
 }
-
-const CINEMATIC_VIDEO_URL = 'https://yourimageshare.com/ib/CufIM3MjZf.mp4';
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
   const [videoError, setVideoError] = useState(false);
@@ -14,6 +13,49 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+
+  // Inicializa e força atributos de autoplay silencioso para garantir compatibilidade móvel (iOS / Android)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+
+    const playVideo = async () => {
+      try {
+        await video.play();
+        setIsPlaying(true);
+      } catch (err) {
+        console.info('Tentativa de autoplay bloqueada pelo navegador, acionando fallback silencioso:', err);
+        video.muted = true;
+        try {
+          await video.play();
+          setIsPlaying(true);
+        } catch {
+          setIsPlaying(false);
+        }
+      }
+    };
+
+    playVideo();
+
+    // Desbloqueio alternativo na primeira interação do usuário (toque ou clique) em navegadores com restrições
+    const handleFirstInteraction = () => {
+      if (video && video.paused) {
+        video.muted = true;
+        video.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
+    };
+
+    window.addEventListener('touchstart', handleFirstInteraction, { once: true, passive: true });
+    window.addEventListener('click', handleFirstInteraction, { once: true, passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('click', handleFirstInteraction);
+    };
+  }, []);
 
   // Respeita prefers-reduced-motion do sistema operacional (WCAG 2.1 AA)
   useEffect(() => {
@@ -60,43 +102,56 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       aria-label="Apresentação da Arllon Fernandes Barbearia"
-      className="relative w-full min-h-[72vh] sm:min-h-[82vh] md:min-h-[88vh] flex flex-col justify-center items-center text-center overflow-hidden"
+      className="relative w-full min-h-[75vh] sm:min-h-[85vh] md:min-h-[90vh] flex flex-col justify-center items-center text-center overflow-hidden"
     >
       {/* Edge-to-Edge Full-Width Video Background (Zero Margins) */}
       <div className="absolute inset-0 w-full h-full overflow-hidden bg-[#020812]">
         {!videoError ? (
           <video
             ref={videoRef}
-            src={CINEMATIC_VIDEO_URL}
             autoPlay
             loop
             muted
             playsInline
-            onError={() => setVideoError(true)}
-            className="absolute inset-0 w-full h-full object-cover object-center scale-105 filter brightness-90 contrast-110"
-          />
+            preload="auto"
+            poster={HERO_VIDEO_CONFIG.posterSrc}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onError={() => {
+              console.warn('Vídeo não pôde ser carregado, exibindo poster institucional.');
+              setVideoError(true);
+            }}
+            className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700"
+            title={HERO_VIDEO_CONFIG.title}
+          >
+            <source src={HERO_VIDEO_CONFIG.videoSrc} type="video/mp4" />
+          </video>
         ) : (
-          /* High-End Ambient Fallback if video is unavailable */
-          <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-[#082e5a] via-[#041426] to-[#020812]" />
+          /* High-End Ambient Fallback com o poster estático da barbearia se o vídeo falhar */
+          <img
+            src={HERO_VIDEO_CONFIG.posterSrc}
+            alt="Logo da Arllon Fernandes Barbearia"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
         )}
 
-        {/* Aesthetic Blue Color Gradient Overlays to make the biosite clean, modern and seamless */}
-        {/* 1. Deep blue atmospheric tint */}
+        {/* Aesthetic Color Gradient Overlays: preenchem o vídeo com profundidade e transição de tela limpa */}
+        {/* 1. Ambient depth overlay - garante contraste perfeito para o texto e os botões sobre o vídeo */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-b from-[#020812]/80 via-[#082e5a]/35 to-[#020812] pointer-events-none"
+          className="absolute inset-0 bg-gradient-to-b from-[#020812]/50 via-[#020812]/65 to-[#020812] pointer-events-none"
         />
 
-        {/* 2. Top soft vignette */}
+        {/* 2. Top soft vignette - transição suave com a barra de navegação superior */}
         <div
           aria-hidden="true"
-          className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#020812] to-transparent pointer-events-none"
+          className="absolute inset-x-0 top-0 h-24 sm:h-32 bg-gradient-to-b from-[#020812]/90 to-transparent pointer-events-none"
         />
 
-        {/* 3. Bottom seamless blend into page background */}
+        {/* 3. Bottom Seamless Color Gradient: degradê na parte inferior para uma transição suave e limpa para o catálogo */}
         <div
           aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 h-48 sm:h-64 bg-gradient-to-t from-[#020812] via-[#020812]/85 to-transparent pointer-events-none"
+          className="absolute inset-x-0 bottom-0 h-48 sm:h-72 bg-gradient-to-t from-[#020812] via-[#020812]/90 to-transparent pointer-events-none z-10"
         />
 
         {/* 4. Radial Vignette for clean focus and contrast */}
@@ -105,14 +160,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'radial-gradient(ellipse at center, transparent 25%, rgba(4, 20, 38, 0.45) 65%, #020812 100%)',
+              'radial-gradient(ellipse at center, transparent 25%, rgba(2, 8, 18, 0.45) 65%, #020812 100%)',
           }}
         />
 
-        {/* 5. Interactive Cursor Spotlight */}
+        {/* 5. Interactive Cursor Spotlight (desktop) */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 pointer-events-none transition-opacity duration-700"
+          className="hidden sm:block absolute inset-0 pointer-events-none transition-opacity duration-700"
           style={{
             background: `radial-gradient(circle 500px at ${mousePos.x}% ${mousePos.y}%, rgba(22, 136, 255, 0.15), transparent 75%)`,
           }}
@@ -145,7 +200,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExplore }) => {
       )}
 
       {/* Editorial Content Over Full-Width Video Banner */}
-      <div className="relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center">
+      <div className="relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 md:py-28 flex flex-col items-center">
         {/* Quiet Kicker Label (Zero-Pill Discipline) */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
