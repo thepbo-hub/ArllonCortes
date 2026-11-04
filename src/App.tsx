@@ -11,8 +11,15 @@ import { BudgetSummary } from './components/budget/BudgetSummary';
 import { SiteFooter } from './components/layout/SiteFooter';
 import { LegalModal, LegalDocType } from './components/legal/LegalModal';
 import { CookieConsentBanner } from './components/legal/CookieConsentBanner';
+import { NotFoundView } from './components/common/NotFoundView';
 
 export default function App() {
+  const [isNotFound, setIsNotFound] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const path = window.location.pathname;
+    return path !== '/' && path !== '' && path !== '/index.html';
+  });
+
   const [isBudgetOpen, setIsBudgetOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<CategoryId>('cabelo');
 
@@ -22,6 +29,14 @@ export default function App() {
   
   // Controle do Banner de Consentimento de Cookies
   const [isCookieForceOpen, setIsCookieForceOpen] = useState(false);
+
+  const handleGoHome = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '/');
+    }
+    setIsNotFound(false);
+  }, []);
+
 
   const {
     selectedServices,
@@ -76,6 +91,10 @@ export default function App() {
 
     return () => observer.disconnect();
   }, []);
+
+  if (isNotFound) {
+    return <NotFoundView onGoHome={handleGoHome} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#020812] text-white flex flex-col selection:bg-[#1688ff] selection:text-white">

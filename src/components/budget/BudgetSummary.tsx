@@ -81,7 +81,7 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
 
   if (!isOpen) return null;
 
-  // Abertura segura do WhatsApp com mensagem dinâmica pré-preenchida
+  // Abertura segura do WhatsApp com mensagem dinâmica pré-preenchida e fallback para bloqueadores de popup
   const handleSendWhatsAppBudget = () => {
     if (totalCount === 0) return;
 
@@ -92,9 +92,11 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
     });
 
     try {
-      navigator.clipboard.writeText(message);
+      if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(message).catch(() => {});
+      }
     } catch {
-      // ignore
+      // ignore clipboard error in restricted environments
     }
 
     const url = buildWhatsAppQuoteUrl({
@@ -102,7 +104,16 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
       quoteServices,
       subtotalCents,
     });
-    window.open(url, '_blank', 'noopener,noreferrer');
+
+    try {
+      const opened = window.open(url, '_blank', 'noopener,noreferrer');
+      // Se o navegador bloqueou o popup, redireciona diretamente na mesma aba
+      if (!opened || opened.closed || typeof opened.closed === 'undefined') {
+        window.location.href = url;
+      }
+    } catch {
+      window.location.href = url;
+    }
 
     // Ao fechar/enviar o orçamento, o simulador fica vazio imediatamente
     onClearSelection();

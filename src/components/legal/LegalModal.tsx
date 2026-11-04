@@ -1,9 +1,17 @@
-import React, { useEffect } from 'react';
-import { X, ShieldCheck, BookOpen, Cookie, Printer } from 'lucide-react';
-import { PrivacyPolicyContent } from './PrivacyPolicyContent';
-import { TermsOfUseContent } from './TermsOfUseContent';
-import { CookiePolicyContent } from './CookiePolicyContent';
+import React, { useEffect, lazy, Suspense } from 'react';
+import { X, ShieldCheck, BookOpen, Cookie, Printer, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+
+const PrivacyPolicyContent = lazy(() =>
+  import('./PrivacyPolicyContent').then((m) => ({ default: m.PrivacyPolicyContent }))
+);
+const TermsOfUseContent = lazy(() =>
+  import('./TermsOfUseContent').then((m) => ({ default: m.TermsOfUseContent }))
+);
+const CookiePolicyContent = lazy(() =>
+  import('./CookiePolicyContent').then((m) => ({ default: m.CookiePolicyContent }))
+);
+
 
 export type LegalDocType = 'privacy' | 'terms' | 'cookies';
 
@@ -141,16 +149,25 @@ export const LegalModal: React.FC<LegalModalProps> = ({
 
         {/* Scrollable Document Content */}
         <div className="flex-1 overflow-y-auto px-5 sm:px-8 py-6 max-h-[calc(90vh-140px)]">
-          {activeDoc === 'privacy' && <PrivacyPolicyContent />}
-          {activeDoc === 'terms' && <TermsOfUseContent />}
-          {activeDoc === 'cookies' && (
-            <CookiePolicyContent
-              onOpenPreferences={() => {
-                onClose();
-                onOpenPreferences?.();
-              }}
-            />
-          )}
+          <Suspense
+            fallback={
+              <div className="flex flex-col items-center justify-center py-20 text-[#8faec7]">
+                <Loader2 className="w-8 h-8 animate-spin text-[#35a7ff] mb-3" aria-hidden="true" />
+                <span className="text-xs font-semibold">Carregando documento legal...</span>
+              </div>
+            }
+          >
+            {activeDoc === 'privacy' && <PrivacyPolicyContent />}
+            {activeDoc === 'terms' && <TermsOfUseContent />}
+            {activeDoc === 'cookies' && (
+              <CookiePolicyContent
+                onOpenPreferences={() => {
+                  onClose();
+                  onOpenPreferences?.();
+                }}
+              />
+            )}
+          </Suspense>
         </div>
 
         {/* Modal Footer with quick close */}
