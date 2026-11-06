@@ -81,7 +81,17 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
 
   if (!isOpen) return null;
 
-  // Abertura segura do WhatsApp com mensagem dinâmica pré-preenchida e fallback para bloqueadores de popup
+  // URL oficial e segura do WhatsApp gerada dinamicamente com base nos serviços selecionados
+  const whatsAppUrl =
+    totalCount > 0
+      ? buildWhatsAppQuoteUrl({
+          fixedPriceServices,
+          quoteServices,
+          subtotalCents,
+        })
+      : '#';
+
+  // Disparo para WhatsApp: abre em nova aba/app, mantém o biosite 100% ativo e zera o pedido
   const handleSendWhatsAppBudget = () => {
     if (totalCount === 0) return;
 
@@ -99,25 +109,12 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
       // ignore clipboard error in restricted environments
     }
 
-    const url = buildWhatsAppQuoteUrl({
-      fixedPriceServices,
-      quoteServices,
-      subtotalCents,
-    });
-
-    try {
-      const opened = window.open(url, '_blank', 'noopener,noreferrer');
-      // Se o navegador bloqueou o popup, redireciona diretamente na mesma aba
-      if (!opened || opened.closed || typeof opened.closed === 'undefined') {
-        window.location.href = url;
-      }
-    } catch {
-      window.location.href = url;
-    }
-
-    // Ao fechar/enviar o orçamento, o simulador fica vazio imediatamente
-    onClearSelection();
-    onClose();
+    // Após iniciar o envio na nova aba do WhatsApp, esvazia o pedido e fecha a gaveta,
+    // garantindo que o biosite continue funcionando limpo e zerado.
+    setTimeout(() => {
+      onClearSelection();
+      onClose();
+    }, 60);
   };
 
   return (
@@ -317,18 +314,19 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
                 </div>
               </div>
 
-              {/* Botão Principal: ENVIAR MEU ORÇAMENTO PELO WHATSAPP */}
+              {/* Botão Principal: ENVIAR MEU ORÇAMENTO PELO WHATSAPP (Link nativo seguro que abre em nova aba sem travar o biosite) */}
               <div className="pt-2">
-                <button
-                  type="button"
+                <a
+                  href={whatsAppUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={handleSendWhatsAppBudget}
-                  disabled={totalCount === 0}
-                  className="animate-shine group relative w-full flex items-center justify-center gap-3 px-5 py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-[#25D366] via-[#1EBE5D] to-[#128C7E] hover:from-[#22c35e] hover:to-[#0f7a6e] text-white font-display text-xs sm:text-sm font-black tracking-wider uppercase border border-emerald-300/40 ring-1 ring-white/20 shadow-[0_8px_25px_rgba(37,211,102,0.35),0_0_15px_rgba(18,140,126,0.25)] hover:shadow-[0_12px_32px_rgba(37,211,102,0.55)] transition-all duration-300 hover:scale-[1.015] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                  className="animate-shine group relative w-full flex items-center justify-center gap-3 px-5 py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-[#25D366] via-[#1EBE5D] to-[#128C7E] hover:from-[#22c35e] hover:to-[#0f7a6e] text-white font-display text-xs sm:text-sm font-black tracking-wider uppercase border border-emerald-300/40 ring-1 ring-white/20 shadow-[0_8px_25px_rgba(37,211,102,0.35),0_0_15px_rgba(18,140,126,0.25)] hover:shadow-[0_12px_32px_rgba(37,211,102,0.55)] transition-all duration-300 hover:scale-[1.015] active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 cursor-pointer"
                   aria-label="Enviar meu orçamento pelo WhatsApp"
                 >
                   <WhatsAppIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white shrink-0 drop-shadow-sm transition-transform duration-300 group-hover:scale-110" />
                   <span className="truncate">ENVIAR MEU ORÇAMENTO PELO WHATSAPP</span>
-                </button>
+                </a>
 
                 {/* LGPD & Informative Disclosure */}
                 <p className="mt-2 text-[11px] text-[#8faec7] text-center leading-relaxed">
